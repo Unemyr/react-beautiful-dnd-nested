@@ -34,46 +34,15 @@ type WithDistance = {|
   id: DroppableId,
 |};
 
-type GetFurthestArgs = {|
-  pageBorderBox: Rect,
-  draggable: DraggableDimension,
+type GetHighestNestedOrderArgs = {|
   candidates: DroppableDimension[],
 |};
 
-function getFurthestAway({
-  pageBorderBox,
-  draggable,
+function getHighestNestedOrder({
   candidates,
-}: GetFurthestArgs): ?DroppableId {
-  // We are not comparing the center of the home list with the target list as it would
-  // give preference to giant lists
-
-  // We are measuring the distance from where the draggable started
-  // to where it is *hitting* the candidate
-  // Note: The hit point might technically not be in the bounds of the candidate
-
-  const startCenter: Position = draggable.page.borderBox.center;
-  const sorted: WithDistance[] = candidates
-    .map((candidate: DroppableDimension): WithDistance => {
-      const axis: Axis = candidate.axis;
-      const target: Position = patch(
-        candidate.axis.line,
-        // use the current center of the dragging item on the main axis
-        pageBorderBox.center[axis.line],
-        // use the center of the list on the cross axis
-        candidate.page.borderBox.center[axis.crossAxisLine],
-      );
-
-      return {
-        id: candidate.descriptor.id,
-        distance: distance(startCenter, target),
-      };
-    })
-    // largest value will be first
-    .sort((a: WithDistance, b: WithDistance) => b.distance - a.distance);
-
-  // just being safe
-  return sorted[0] ? sorted[0].id : null;
+}: GetHighestNestedOrderArgs): ?DroppableId {
+  // Return the highest nested order item (loaded at top of queue by default in our tests)
+  return (candidates[0] && candidates[0].descriptor) ? candidates[0].descriptor.id : null;
 }
 
 export default function getDroppableOver({
@@ -148,11 +117,9 @@ export default function getDroppableOver({
   }
 
   // Multiple options returned
-  // Should only occur with really large items
-  // Going to use fallback: distance from home
-  return getFurthestAway({
-    pageBorderBox,
-    draggable,
+  // Should only occur with really large items or nested list
+  // Hack - Going to prioritize nested sub-lists first instead of the closest one
+  return getHighestNestedOrder({
     candidates,
   });
 }
