@@ -1833,8 +1833,6 @@ function getHasOverlap(first, second) {
 
 function getInnerMostNestedOrder(_ref) {
   var candidates = _ref.candidates;
-  console.log("CANDIDATES");
-  console.log(candidates);
   var selectIndex = 0;
 
   for (var i = 1; i < candidates.length; i++) {
@@ -1843,7 +1841,6 @@ function getInnerMostNestedOrder(_ref) {
 
     if (boxCandidate.top >= boxSelected.top && boxCandidate.bottom <= boxSelected.bottom && boxCandidate.left >= boxSelected.left && boxCandidate.right <= boxSelected.right) {
       selectIndex = i;
-      console.log("SELECTED NEW INDEX: " + i);
     }
   }
 
