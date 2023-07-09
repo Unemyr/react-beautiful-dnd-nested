@@ -34,15 +34,30 @@ type WithDistance = {|
   id: DroppableId,
 |};
 
-type GetHighestNestedOrderArgs = {|
+type GetInnerMostNestedOrderArgs = {|
   candidates: DroppableDimension[],
 |};
 
-function getHighestNestedOrder({
+function getInnerMostNestedOrder({
   candidates,
-}: GetHighestNestedOrderArgs): ?DroppableId {
-  // Return the highest nested order item (loaded at top of queue by default in our tests)
-  return (candidates[0] && candidates[0].descriptor) ? candidates[0].descriptor.id : null;
+}: GetInnerMostNestedOrderArgs): ?DroppableId {
+  // Iterate candidates and find the one with the innermost dimensions
+  // Limitation - this does not support nested frames with negative margins - but that should be very rare
+  let selectIndex = 0
+  for (let i = 1; i < candidates.length; i++) {
+    let boxSelected  = candidates[selectIndex].client.contentBox
+    let boxCandidate = candidates[i].client.contentBox
+
+    if ((boxCandidate.top    >= boxSelected.top   ) &&
+        (boxCandidate.bottom <= boxSelected.bottom) &&
+        (boxCandidate.left   >= boxSelected.left  ) &&
+        (boxCandidate.right  <= boxSelected.right )) {
+      selectIndex = i
+    }
+  }
+
+  // Return candidate with innermost dimensions
+  return (candidates[selectIndex] && candidates[selectIndex].descriptor) ? candidates[selectIndex].descriptor.id : null;
 }
 
 export default function getDroppableOver({
@@ -119,7 +134,7 @@ export default function getDroppableOver({
   // Multiple options returned
   // Should only occur with really large items or nested list
   // Hack - Going to prioritize nested sub-lists first instead of the closest one
-  return getHighestNestedOrder({
+  return getInnerMostNestedOrder({
     candidates,
   });
 }

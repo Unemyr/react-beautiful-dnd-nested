@@ -4820,9 +4820,23 @@
     return first.left < second.right && first.right > second.left && first.top < second.bottom && first.bottom > second.top;
   }
 
-  function getHighestNestedOrder(_ref) {
+  function getInnerMostNestedOrder(_ref) {
     var candidates = _ref.candidates;
-    return candidates[0] && candidates[0].descriptor ? candidates[0].descriptor.id : null;
+    console.log("CANDIDATES");
+    console.log(candidates);
+    var selectIndex = 0;
+
+    for (var i = 1; i < candidates.length; i++) {
+      var boxSelected = candidates[selectIndex].client.contentBox;
+      var boxCandidate = candidates[i].client.contentBox;
+
+      if (boxCandidate.top >= boxSelected.top && boxCandidate.bottom <= boxSelected.bottom && boxCandidate.left >= boxSelected.left && boxCandidate.right <= boxSelected.right) {
+        selectIndex = i;
+        console.log("SELECTED NEW INDEX: " + i);
+      }
+    }
+
+    return candidates[selectIndex] && candidates[selectIndex].descriptor ? candidates[selectIndex].descriptor.id : null;
   }
 
   function getDroppableOver$1(_ref2) {
@@ -4875,7 +4889,7 @@
       return candidates[0].descriptor.id;
     }
 
-    return getHighestNestedOrder({
+    return getInnerMostNestedOrder({
       candidates: candidates
     });
   }
