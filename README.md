@@ -13,3 +13,10 @@ The priority decision of which list to drop the dragged object to is based on an
 ## Get started
 
 Compile a local library binary using 'yarn run build'
+
+
+## Demo example
+
+You can see the nested lists support in action on [Sprucely | Data Insights and Interactive Dashboards Service] (https://www.sprucely.io/) in the Dashboard Editor view (Note: You will need an account in order to access this part of the service, but its totally free and an e-mail address is the only detail asked for).
+
+If you are not ready to setup an account, you can also refer to a screenshot of nested horizontal and vertical containers stacking widgets here [How Does Sprucely.io Work and Get Started] (https://www.sprucely.io/product/), although it does not allow you to interact with or test the behaviour of react-beautiful-dnd-nested directly.
